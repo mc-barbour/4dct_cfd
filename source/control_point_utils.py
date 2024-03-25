@@ -69,50 +69,58 @@ def getSurfacePoints(vox, surf):
 
     return surf_points
 
-def pointPickerRemove(init_points, surf):
+# def pointPickerRemove(init_points, surf):
     
-    picked_points = []
-    picked_ids = []
-
-    p = pv.Plotter(notebook=0)
-    p.add_mesh(surf, pickable=False,opacity = 1, color='white')
-    p.add_mesh(init_points, render_points_as_spheres=True, color='blue', point_size=15, pickable=True)
-    p.add_text("\n Select Points to Remove")
-    def point_callback(mesh, picked_id):
-
-        point = mesh.points[picked_id]
-        picked_points.append(point)
-        picked_ids.append(picked_id)
-        p.add_point_labels([point,], ['You picked me!'], point_color='red', point_size=15)
-
-    p.enable_point_picking(point_callback, use_mesh=True)
-    p.show()
+#     """
+#     Manually remove control points using a picker
+#     """
     
-    return picked_points, picked_ids
+#     picked_points = []
+#     picked_ids = []
 
+#     p = pv.Plotter(notebook=0)
+#     p.add_mesh(surf, pickable=False,opacity = 1, color='white')
+#     p.add_mesh(init_points, render_points_as_spheres=True, color='blue', point_size=15, pickable=True)
+#     p.add_text("\n Select Points to Remove")
+#     def point_callback(mesh, picked_id):
 
-def pointPickerAdd(init_points, surf):
+#         point = mesh.points[picked_id]
+#         picked_points.append(point)
+#         picked_ids.append(picked_id)
+#         p.add_point_labels([point,], ['You picked me!'], point_color='red', point_size=15)
+
+#     p.enable_point_picking(point_callback, use_mesh=True)
+#     p.show()
     
-    picked_points = []
-    picked_ids = []
-
-    p = pv.Plotter(notebook=0)
-    p.add_mesh(surf, pickable=True, opacity=1, color='white')
-    p.add_mesh(init_points, render_points_as_spheres=True, color='blue', point_size=15, pickable=False)
-    p.add_text("/n Select Points to Add")
+#     return picked_points, picked_ids
 
 
-    def point_callback(mesh, picked_id):
-
-        point = mesh.points[picked_id]
-        picked_points.append(point)
-        picked_ids.append(picked_id)
-        p.add_point_labels([point,], ['Adding Point!'], point_color='red', point_size=15)
-
-    p.enable_point_picking(point_callback, use_mesh=True)
-    p.show()
+# def pointPickerAdd(init_points, surf):
     
-    return picked_points, picked_ids
+#     """
+#     Manually add control points using a picker
+#     """
+    
+#     picked_points = []
+#     picked_ids = []
+
+#     p = pv.Plotter(notebook=0)
+#     p.add_mesh(surf, pickable=True, opacity=1, color='white')
+#     p.add_mesh(init_points, render_points_as_spheres=True, color='blue', point_size=15, pickable=False)
+#     p.add_text("/n Select Points to Add")
+
+
+#     def point_callback(mesh, picked_id):
+
+#         point = mesh.points[picked_id]
+#         picked_points.append(point)
+#         picked_ids.append(picked_id)
+#         p.add_point_labels([point,], ['Adding Point!'], point_color='red', point_size=15)
+
+#     p.enable_point_picking(point_callback, use_mesh=True)
+#     p.show()
+    
+#     return picked_points, picked_ids
 
 
 def point_distance(p1,p2):

@@ -222,6 +222,11 @@ def interpolate_controlPoints_time(df_CT, dt, new_time_array, show=True, n_demo_
 
 def pointPickerRemove(init_points, surf):
     
+    """
+    Manually remove control points using a picker
+    """
+        
+    
     picked_points = []
     picked_ids = []
 
@@ -243,6 +248,11 @@ def pointPickerRemove(init_points, surf):
 
 
 def pointPickerAdd(init_points, surf):
+    
+    """
+    Manually add control points using a picker
+    """
+        
     
     picked_points = []
     picked_ids = []
