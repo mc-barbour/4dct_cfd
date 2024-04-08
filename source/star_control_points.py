@@ -55,6 +55,61 @@ def periodic_star_table_totalDisp_fromArrays(X,Y,Z, dt=0.1, n_cycles=5):
         
     return df_save
 
+
+def periodic_star_table_totalDisp_fromArraysV2(X,Y,Z, dt=0.1, n_cycles=5, start_time=0.0):
+    """
+    Create periodic displacement table for starccm. Displacement is defined as total displacement: X_n - X_0
+    
+    Input is X,Y,Z arrays X[time, positions]
+    dt: delta time between each defined cp
+    n_cycles: number of cycles to repeat for periodic simulation
+
+    """
+    
+    n_time_points = len(X[:,0])
+    
+    n_control_points = len(X[0,:])
+    
+    all_data_list = []
+
+    all_data_list.append(pd.DataFrame(data=X[0,:], columns=['X']))
+    all_data_list.append(pd.DataFrame(data=Y[0,:], columns=['Y']))
+    all_data_list.append(pd.DataFrame(data=Z[0,:], columns=['Z']))
+
+    column_x = ["X[t={:1.5f}s]".format(start_time)]
+    column_y = ["Y[t={:1.5f}s]".format(start_time)]
+    column_z = ["Z[t={:1.5f}s]".format(start_time)]
+
+    
+    all_data_list.append(pd.DataFrame(data=np.zeros(n_control_points), columns=column_x))
+    all_data_list.append(pd.DataFrame(data=np.zeros(n_control_points), columns=column_y))
+    all_data_list.append(pd.DataFrame(data=np.zeros(n_control_points), columns=column_z))
+
+    
+    time_count = 1
+    for n_cycle in range(n_cycles):
+        for count in range(1,n_time_points):
+            time =  time_count * dt
+
+            
+            column_x = ["X[t={:1.5f}s]".format(time + start_time)]
+            column_y = ["Y[t={:1.5f}s]".format(time + start_time)]
+            column_z = ["Z[t={:1.5f}s]".format(time + start_time)]
+            
+            dx = X[count,:] - X[0,:]
+            dy = Y[count,:] - Y[0,:]
+            dz = Z[count,:] - Z[0,:]
+            
+            all_data_list.append(pd.DataFrame(data=dx, columns=column_x))
+            all_data_list.append(pd.DataFrame(data=dy, columns=column_y))
+            all_data_list.append(pd.DataFrame(data=dz, columns=column_z))
+            
+            time_count = time_count+1
+        
+    return pd.concat(all_data_list, axis=1)
+
+
+
 def periodic_star_table_IncDisp_fromArrays(X,Y,Z, dt=0.1, n_cycles=5, start_time=0.0):
     """
     Create periodic displacement table for starccm. Displacement is defined as incremnetal displacement: X_n - X_n-1
@@ -110,7 +165,6 @@ def periodic_star_table_IncDisp_fromArraysV2(X,Y,Z, dt=0.1, n_cycles=5, start_ti
     dt: delta time between each defined cp
     n_cycles: number of cycles to repeat for periodic simulation
     
-    * should re-write this such that the datafram isn't growing at each itertions
     """
     
     
