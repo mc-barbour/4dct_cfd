@@ -59,7 +59,7 @@ p.add_mesh(surf)
 p.add_mesh(new_cp, render_points_as_spheres=True, point_size=15, color='blue')
 p.show()
 
-#%% Add control points
+#%% Add control points if needed
 
 new_points, pt_ids = pointPickerAdd(new_cp, surf)
 
@@ -88,7 +88,7 @@ df['visible'] = np.ones(len(df))
 df['locked'] = np.ones(len(df))
 
 df.index.name='label'
-save_name = work_dir + 'Airway_4_controlPoints_subsample500.fcsv'
+save_name = work_dir + 'Airway_4_controlPoints_subsample500_test.fcsv'
 print(save_name)
 df.to_csv(save_name)
 
@@ -96,7 +96,7 @@ df.to_csv(save_name)
 
 save_dir = '/Volumes/files/RadResearch/Projects/TracheoMalacia/DynamicCTMalaciaExample_1/control_points_start4/'
 prefix = "Airway_4_controlPoints_subsample500_"
-transformSequenceID = 'vtkMRMLSequenceNode6' # name of sequence node with registration
+transformSequenceID = 'vtkMRMLSequenceNode3' # name of sequence node with registration
 
 controlPointNode = getNode("Airway_4_controlPoints_subsample500")
 
