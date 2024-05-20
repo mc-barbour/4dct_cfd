@@ -58,3 +58,5 @@ def breathing_waveform_sinusoid(tidal_volume, period, period_insp, D_inlet, D_mi
     print("Peak Expiratory Flow: {:.4f} ml/s".format(max(Q)))
     print("Peak Expiratory Re inlet: {:.4f} ml/s".format(max(Q*1e-6*4/(np.pi * D_inlet * nu))))
     print("Peak Expiratory Re narrowing: {:.4f} ml/s".format(max(Q*1e-6*4/(np.pi * D_min * nu))))
+    
+    return Q, time
