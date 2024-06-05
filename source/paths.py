@@ -16,4 +16,3 @@ if platform == "win32":
 elif platform == "darwin":
     data_dir_sch = Path("/Volumes/Active/dahl_j/4D CT")
     onedrive_dir = Path("/Users/mbarb1/OneDrive - UW/RobinSequence/Data/")
-    print("need to define mac paths")
