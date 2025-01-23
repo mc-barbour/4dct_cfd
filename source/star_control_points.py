@@ -16,6 +16,100 @@ from scipy.interpolate import CubicSpline
 
 
 
+def star_motion_table_split_incDisp(X, Y, Z, start_time=0.0, dt=0.1, dim=3, n_cycles=3, div_per_cycle=10, cycle_len=1.0):
+    """
+    Modified function for exporting StarCCM motion table - 1/16/2025
+    This version of the function exports a sparse version of the CP where the CP locations are updated as new rows for every time-step. StarCCM does not keep 
+    row correspondence with CP ids
+
+    Input is X,Y,Z arrays X[time, positions]
+    dt: delta time between each defined cp
+    n_cycles: number of cycles to repeat for periodic simulation
+    cycle_len: period length (s)
+    Start_time: start time of this table. recomend that tables are split to only contain 0.01s of data. Otherwise files get too large.
+
+
+    """
+    
+    n_time_points = int(len(X[:,0]) * (1/div_per_cycle)) + 1
+    n_control_points = len(X[0,:])
+    print(n_time_points)
+    
+    
+    if start_time >= cycle_len:
+        start_time_local = start_time % cycle_len
+        start_time_index = int((start_time_local/cycle_len)*len(X[:,0]))
+        print(start_time_index)
+
+    else:
+        start_time_index = int((start_time/cycle_len)*len(X[:,0]))
+        print(start_time_index)
+    
+    
+    position_list = []
+    position_list.append(pd.DataFrame(data=X[start_time_index:start_time_index+n_time_points-1,:].flatten(), columns=['X']))
+    position_list.append(pd.DataFrame(data=Y[start_time_index:start_time_index+n_time_points-1,:].flatten(), columns=['Y']))
+    position_list.append(pd.DataFrame(data=Z[start_time_index:start_time_index+n_time_points-1,:].flatten(), columns=['Z']))
+    
+    df_positions = pd.concat(position_list, axis=1)
+    print(df_positions)
+    
+    disp_table = np.zeros(((n_time_points-1) * n_control_points, n_time_points * dim))
+    column_list = []
+    
+    column_x = "X[t={:1.5f}s]".format(start_time)
+    column_y = "Y[t={:1.5f}s]".format(start_time)
+    column_z = "Z[t={:1.5f}s]".format(start_time)
+    
+    column_list.append(column_x)
+    column_list.append(column_y)
+    column_list.append(column_z)
+    
+    
+    for count in range(1, n_time_points):
+        
+        if start_time >= cycle_len:
+            start_time_local = start_time % cycle_len
+            time_count = count + int((start_time_local/cycle_len)*len(X[:,0]))
+        else:
+            time_count = count + int((start_time/cycle_len)*len(X[:,0]))
+        time =  count * dt
+        
+        
+        time = count * dt
+        cp_range_start = count  
+        
+        
+        column_x = "X[t={:1.5f}s]".format(time + start_time)
+        column_y = "Y[t={:1.5f}s]".format(time + start_time)
+        column_z = "Z[t={:1.5f}s]".format(time + start_time)
+        
+        column_list.append(column_x)
+        column_list.append(column_y)
+        column_list.append(column_z)
+        
+        # calculate displacement
+        dx = X[time_count,:] - X[time_count-1,:]
+        dy = Y[time_count,:] - Y[time_count-1,:]
+        dz = Z[time_count,:] - Z[time_count-1,:]
+        
+        # populate displacement table
+        disp_table[(count-1)*n_control_points:(count-1)*n_control_points + n_control_points, count * dim] = dx
+        disp_table[(count-1)*n_control_points:(count-1)*n_control_points + n_control_points, count * dim + 1] = dy
+        disp_table[(count-1)*n_control_points:(count-1)*n_control_points + n_control_points, count * dim + 2] = dz
+    
+        
+        
+    df_motion = pd.DataFrame(disp_table, columns = column_list)
+    
+    df_full = pd.concat([df_positions, df_motion], axis=1)
+    
+    
+    return df_full
+
+
+
+
 def periodic_star_table_totalDisp_fromArrays(X,Y,Z, dt=0.1, n_cycles=5):
     """
     Create periodic displacement table for starccm. Displacement is defined as total displacement: X_n - X_0

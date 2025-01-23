@@ -28,6 +28,18 @@ Functions for defining control point placement and modifying control point track
 
 """
 
+def compute_displacement_vec(cp1, cp0):
+    """
+    computed the displacement between two sets of points
+    input: dataframes
+    outpt: vector (numpy), and magnitude
+    """
+
+    vec = cp1 - cp0
+    mag = np.linalg.norm(vec, axis = 1)
+    return vec, mag
+
+
 
 def intersecting_cells(vox, surf):
     
