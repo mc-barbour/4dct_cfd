@@ -167,7 +167,7 @@ for count, surf_num in enumerate(target_surface_order[0:3]):
 
 #%%Airway_8 is the starting point
 
-starting_surface = pv.read('airway_test/Airway_8_v5_recon.stl')
+# starting_surface = pv.read('airway_test/Airway_8_v5_recon.stl')
 starting_surface = pv.read('airway_test/Airway_8_v5_recon_downsample_coarse.ply')
 starting_surface_tmp = starting_surface.clip(normal="z", origin=(0,0,-10),invert=True)
 starting_surface_clipped = starting_surface_tmp.clip(normal="z", origin=(0,0,-50), invert=False)
@@ -229,7 +229,7 @@ for points in points_list:
     morph_points_df.append(df)
     
 
-#%% convert from dataframe to x,y,z arrays
+#%% convert from dataframe to x,y,z arrays - may not need this step
 
 n_images = len(morph_points_df)
 n_points = len(df)
@@ -282,13 +282,28 @@ for i in iter:
 
 
 
+#%% create first point set definition - use just the XYZ coordinates at t=0 to define point sets in Star
+df_point_definition = pd.DataFrame(np.array([x_all[0,:], y_all[0,:],z_all[0,:]]).T, columns = ['X', 'Y', 'Z'])
+df_point_definition = df_point_definition * 1e-3
+
+df_point_definition.to_csv(work_dir +"StarControlPoints_8start_newDef_coarse_v5_realUnits_Init.csv", index=False)
 
 
 
+#%% Executing this function should save just a single time step in each file
 
+work_dir = '/Users/mbarb1/OneDrive - UW/TracheaMalacia/CFD/Ama_demo_files/cp_files_everyDT/'
+period_length = 1.5
+start_time = 0
+end_time = period_length * 2
+dt_cfd = 0.01
 
+iter = np.arange(start_time, end_time, dt_cfd)
 
-
+for i in iter:
+    df_periodic_star = reference_periodic_star_table_IncDisp_fromArrays_single_dt(x_new, y_new, z_new, dt=dt_cfd, start_time=i, cycle_len=period_length)
+    df_periodic_star = df_periodic_star*1e-3
+    df_periodic_star.to_csv(work_dir +f"TM3_cpField_singleDT_01_{(i+dt_cfd):.5f}.csv", index=False)
 
 
 

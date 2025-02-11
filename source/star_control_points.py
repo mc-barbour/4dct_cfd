@@ -15,6 +15,72 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline
 
 
+def reference_periodic_star_table_IncDisp_fromArrays_single_dt(X,Y,Z, dt=0.1, start_time=0.0, cycle_len=0.7):
+    """
+    Create periodic displacement table for starccm. Displacement is defined as incremnetal displacement: X_n - X_n-1
+    
+    Input is X,Y,Z arrays X[time, positions]
+    dt: delta time between each defined cp - this is also equal to dt_cfd
+    cycle_len: period length
+    
+
+    
+    """
+    
+    n_control_points = len(X[0,:])
+    
+    all_data_list = []
+    
+    
+    if start_time >= cycle_len:
+        start_time_local = start_time % cycle_len
+        temp_index  = int(round(start_time_local*(1/dt), 5))
+        print(temp_index)
+    else:
+        temp_index  = int(round(start_time*(1/dt), 5))
+        print(temp_index)
+
+    all_data_list.append(pd.DataFrame(data=X[temp_index,:], columns=['X']))
+    all_data_list.append(pd.DataFrame(data=Y[temp_index,:], columns=['Y']))
+    all_data_list.append(pd.DataFrame(data=Z[temp_index,:], columns=['Z']))
+    
+    if start_time == 0.0:
+
+        column_x = ["X[t={:1.5f}s]".format(start_time)]
+        column_y = ["Y[t={:1.5f}s]".format(start_time)]
+        column_z = ["Z[t={:1.5f}s]".format(start_time)]
+    
+
+        all_data_list.append(pd.DataFrame(data=np.zeros(n_control_points), columns=column_x))
+        all_data_list.append(pd.DataFrame(data=np.zeros(n_control_points), columns=column_y))
+        all_data_list.append(pd.DataFrame(data=np.zeros(n_control_points), columns=column_z))
+    
+    
+
+    if start_time >= cycle_len:
+        start_time_local = start_time % cycle_len
+        count = int((start_time_local/cycle_len)*len(X[:,0]))
+    else:
+        count = int((start_time/cycle_len)*len(X[:,0]))
+
+
+    column_x = ["X[t={:1.5f}s]".format(dt + start_time)]
+    column_y = ["Y[t={:1.5f}s]".format(dt + start_time)]
+    column_z = ["Z[t={:1.5f}s]".format(dt + start_time)]
+    
+    dx = X[count+1,:] - X[count,:]
+    dy = Y[count+1,:] - Y[count,:]
+    dz = Z[count+1,:] - Z[count,:]
+    
+    all_data_list.append(pd.DataFrame(data=dx, columns=column_x))
+    all_data_list.append(pd.DataFrame(data=dy, columns=column_y))
+    all_data_list.append(pd.DataFrame(data=dz, columns=column_z))
+    
+    
+    return pd.concat(all_data_list, axis=1)
+
+
+
 
 def star_motion_table_split_incDisp(X, Y, Z, start_time=0.0, dt=0.1, dim=3, n_cycles=3, div_per_cycle=10, cycle_len=1.0):
     """
