@@ -53,7 +53,7 @@ for count, file in enumerate(target_surface_files):
     
     row = int(count / nrows)
     col = count - row * nrows    
-
+    print(surf.n_points)
     p.subplot(row, col)
     p.add_mesh(surf)
     p.add_text(file.split("/")[-1])                        
@@ -229,7 +229,7 @@ for points in points_list:
     morph_points_df.append(df)
     
 
-#%% convert from dataframe to x,y,z arrays - may not need this step
+Sanele - 2296688#%% convert from dataframe to x,y,z arrays - may not need this step
 
 n_images = len(morph_points_df)
 n_points = len(df)
@@ -255,7 +255,7 @@ from source.star_control_points import *
 
 
 dt_image= 0.1
-dt_cfd = 0.01
+dt_cfd = 0.001
 period_length = 1.5 
 
 new_time = np.arange(0, period_length+dt_cfd, dt_cfd)    
@@ -264,9 +264,9 @@ x_new, y_new, z_new = interpolate_controlPoints_time(morph_points_df, dt_image, 
 
 
 #%% now convert the interpolated control points to excel files for starccm to read
+wrk_dir = '/Users/mbarb1/OneDrive - UW/TracheaMalacia/CFD/Ama_demo_files/new_cp_test_2cycles/'
 
-
-end_time = 2.1
+end_time = 3.0
 start_time = 0.0
 period_length = 1.5
 dt_files = 0.1 # frequency to split csv motion files
@@ -276,10 +276,20 @@ iter = np.arange(start_time, end_time, dt_files)
 for i in iter:
     df_periodic_star = star_motion_table_split_incDisp(x_new, y_new, z_new, dt=dt_cfd, start_time=i, div_per_cycle=div_per_cycle, cycle_len=period_length)
     df_periodic_star = df_periodic_star*1e-3  # convert from mm to m
-    df_periodic_star.to_csv(wrk_dir + "starccm_motion_files/cp_files_01/" + f"test_new_cp_function_{i:.3f}.csv", index=False) 
+    df_periodic_star.to_csv(wrk_dir  + f"test_new_cp_function_{i:.3f}.csv", index=False) 
 
 
 
+#%% what does a coarser set of points look like
+
+points_full = points_list[0]
+points_sparse = points_full[::2,:]
+
+
+p = pv.Plotter()
+p.add_mesh(points_full, render_points_as_spheres=True)
+p.add_mesh(points_sparse, render_points_as_spheres=True, color='red')
+p.show()
 
 
 #%% create first point set definition - use just the XYZ coordinates at t=0 to define point sets in Star
@@ -292,11 +302,11 @@ df_point_definition.to_csv(work_dir +"StarControlPoints_8start_newDef_coarse_v5_
 
 #%% Executing this function should save just a single time step in each file
 
-work_dir = '/Users/mbarb1/OneDrive - UW/TracheaMalacia/CFD/Ama_demo_files/cp_files_everyDT/'
+work_dir = '/Users/mbarb1/OneDrive - UW/TracheaMalacia/CFD/Ama_demo_files/cp_files_everyDT_001/'
 period_length = 1.5
 start_time = 0
 end_time = period_length * 2
-dt_cfd = 0.01
+dt_cfd = 0.001
 
 iter = np.arange(start_time, end_time, dt_cfd)
 
