@@ -613,6 +613,7 @@ def interpolate_controlPoints_time(df_CT, dt, new_time_array, show=True, n_demo_
             p.add_mesh(poly_fine, color='red', render_points_as_spheres=True, point_size=15)
             p.add_mesh(poly_image_data, color='blue', render_points_as_spheres=True, point_size=20)
             p.add_mesh(poly_image_data.points[0], color='green', render_points_as_spheres=True, point_size=20)
+            p.add_mesh(poly_image_data.points[-1], color='orange', render_points_as_spheres=True, point_size=20)
             p.background_color='white'
         
         p.show()
